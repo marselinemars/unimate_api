@@ -5,6 +5,11 @@ from app.utils.database import connect_to_supabase
 auth_bp = Blueprint('auth', __name__)
 
 # Function to handle user signup
+
+@auth_bp.route('/')
+def auth():
+    return jsonify({'message': 'auth succesfully accessed', 'errors': ['no error']}), 400
+
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
     supabase = connect_to_supabase()
@@ -85,30 +90,9 @@ def signup():
 
 
 
-@auth_bp.route('/add', methods=['POST'])
+@auth_bp.route('/add')
 def signintwo():
-    print('a login request ')
-    supabase = connect_to_supabase()
-    data = request.json
-
-    res = None
-    try:
-        res = supabase.auth.sign_in_with_password({'email': data.get('email'), 'password': data.get('password')})
-    except Exception as ex:
-        return jsonify({'message': 'Login failed','errors': [str(ex)]}), 400
-
-    user_info = res.user
-
-    if user_info:
-        user_id = user_info.id # Access the 'id' attribute from 'user_info'
-        user_email = user_info.email  # Access the 'email' attribute from 'user_info'
-        response = supabase.table('users').select('name', 'avatar_url').eq('id', user_id).execute()
-        
-        return jsonify({
-            'id': user_id, 'email': 'the email is edited for test', 'name': response.data[0]['name'], 'avatarUrl': response.data[0]['avatar_url']
-        }), 200
-    else:
-        return jsonify({'message': 'Sign-in failed! User information not found'}), 400
+        return jsonify({'message': 'access to the add functionality'}), 400
         
 @auth_bp.route('/getUserById', methods=['POST'])
 def getUserById():
