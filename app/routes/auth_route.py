@@ -124,5 +124,5 @@ def getUserById():
 
 
 @auth_bp.route('/add', methods=['POST'])
-def save_resource():
-     return jsonify({'message': 'access with success '}), 400
+def add_resource():
+     return jsonify({'message': 'access to add resources with success '}), 400
