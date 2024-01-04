@@ -102,7 +102,7 @@ def signin():
         response = supabase.table('users').select('name', 'avatar_url').eq('id', user_id).execute()
         
         return jsonify({
-            'id': user_id, 'email': user_email, 'name': response.data[0]['name'], 'avatarUrl': response.data[0]['avatar_url']
+            'id': user_id, 'email': 'the email is edited for test', 'name': response.data[0]['name'], 'avatarUrl': response.data[0]['avatar_url']
         }), 200
     else:
         return jsonify({'message': 'Sign-in failed! User information not found'}), 400
