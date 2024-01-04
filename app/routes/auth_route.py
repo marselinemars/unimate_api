@@ -120,3 +120,9 @@ def getUserById():
             }), 200
     except Exception as ex:
         return jsonify({'message': 'getting user failed','errors': ex.args}), 400
+    
+
+
+@auth_bp.route('/add', methods=['POST'])
+def save_resource():
+     return jsonify({'message': 'access with success '}), 400
