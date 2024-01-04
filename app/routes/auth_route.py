@@ -82,8 +82,11 @@ def signup():
         return jsonify({'message': 'Signup failed', 'errors': [str(ex)]}), 400
 
 
-@auth_bp.route('/signin', methods=['POST'])
-def signin():
+
+
+
+@auth_bp.route('/add', methods=['POST'])
+def signintwo():
     print('a login request ')
     supabase = connect_to_supabase()
     data = request.json
@@ -124,8 +127,8 @@ def getUserById():
 
 
 
-@auth_bp.route('/add', methods=['POST'])
-def signintwo():
+@auth_bp.route('/signin', methods=['POST'])
+def signin():
     print('a login request ')
     supabase = connect_to_supabase()
     data = request.json
