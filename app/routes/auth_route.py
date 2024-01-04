@@ -125,7 +125,7 @@ def getUserById():
 
 
 @auth_bp.route('/add', methods=['POST'])
-def signin():
+def signintwo():
     print('a login request ')
     supabase = connect_to_supabase()
     data = request.json
