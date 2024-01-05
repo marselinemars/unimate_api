@@ -11,4 +11,4 @@ def hello():
     # res = supabase.table('users').select('*').execute()
 
     # return jsonify({'data': res.data}), 200
-    return jsonify({'message': 'Signup failed', 'errors': ['hello']}), 400
+    return jsonify({'message': 'Signup failed mmmmmmmmm', 'errors': ['hello']}), 400

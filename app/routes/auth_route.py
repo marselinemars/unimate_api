@@ -7,8 +7,8 @@ auth_bp = Blueprint('auth', __name__)
 # Function to handle user signup
 
 @auth_bp.route('/')
-def auth():
-    return jsonify({'message': 'auth succesfully accessed', 'errors': ['no error']}), 400
+def authhello():
+    return jsonify({'message': 'accessing auth service', 'errors': ['hello']}), 400
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
@@ -87,30 +87,6 @@ def signup():
         return jsonify({'message': 'Signup failed', 'errors': [str(ex)]}), 400
 
 
-
-
-
-@auth_bp.route('/add')
-def signintwo():
-        return jsonify({'message': 'access to the add functionality'}), 400
-        
-@auth_bp.route('/getUserById', methods=['POST'])
-def getUserById():
-    supabase = connect_to_supabase()
-    data = request.json
-    userId = data.get('userId')
-
-    try:
-        response = supabase.table('users').select('name', 'avatar_url').eq('id', userId).execute()
-        return jsonify({
-                'name': response.data[0]['name'], 'avatarUrl': response.data[0]['avatar_url']
-            }), 200
-    except Exception as ex:
-        return jsonify({'message': 'getting user failed','errors': ex.args}), 400
-    
-
-
-
 @auth_bp.route('/signin', methods=['POST'])
 def signin():
     print('a login request ')
@@ -131,7 +107,7 @@ def signin():
         response = supabase.table('users').select('name', 'avatar_url').eq('id', user_id).execute()
         
         return jsonify({
-            'id': user_id, 'email': 'the email is edited for test', 'name': response.data[0]['name'], 'avatarUrl': response.data[0]['avatar_url']
+            'id': user_id, 'email': user_email, 'name': response.data[0]['name'], 'avatarUrl': response.data[0]['avatar_url']
         }), 200
     else:
         return jsonify({'message': 'Sign-in failed! User information not found'}), 400
@@ -149,5 +125,3 @@ def getUserById():
             }), 200
     except Exception as ex:
         return jsonify({'message': 'getting user failed','errors': ex.args}), 400
-    
-
