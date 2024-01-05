@@ -89,8 +89,10 @@ def signup():
 
 @auth_bp.route('/signin', methods=['POST'])
 def signin():
+    print('a login request ')
+    data = request.json
+
     return jsonify({'message': 'Sign-in failed! User information not found'}), 400
-  
     
   
         
