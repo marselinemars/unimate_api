@@ -20,7 +20,7 @@ def test():
 
     supabase = connect_to_supabase()
 
-    data = request.form
+    data = request.json
     
     title = data.get('title')
     description= data.get('description')
