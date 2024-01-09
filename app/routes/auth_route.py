@@ -101,13 +101,22 @@ def signin():
 
 @auth_bp.route('/test', methods=['POST'])
 def test():
-    print('a login request ')
+
     supabase = connect_to_supabase()
-    data = request.json
+
+    data = request.form
+    
+    title = data.get('title')
+    description= data.get('description')
+    type = data.get('type')
+    user_id = data.get('user_id')
+    
+    resource_data = {'title': title, 'description': description, 'type': type, 'user_id': user_id}
+    supabase.table('resources').insert(resource_data).execute()
 
     
     return jsonify({
-            'id': 'the id ', 'email': 'the email', 'name': 'the name', 'avatarUrl': 'the avatar'
+            'result': 'record registered  '
         }), 200
     
         
