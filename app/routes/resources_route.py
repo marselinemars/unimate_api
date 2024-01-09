@@ -31,6 +31,4 @@ def test():
     supabase.table('resources').insert(resource_data).execute()
 
     
-    return jsonify({
-            'result': 'record registered  '
-        }), 200
+    return jsonify( {'title': title, 'description': description, 'type': type, 'user_id': user_id}), 200
