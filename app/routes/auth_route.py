@@ -93,10 +93,11 @@ def signin():
     supabase = connect_to_supabase()
     data = request.json
 
+    title = data.get('title')
+
     
     return jsonify({
-            'id': 'the id ', 'email': 'the email', 'name': 'the name', 'avatarUrl': 'the avatar'
-        }), 200
+            'the sent title is ': title }), 200
 
 
 @auth_bp.route('/test', methods=['POST'])
