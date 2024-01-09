@@ -97,6 +97,18 @@ def signin():
     return jsonify({
             'id': 'the id ', 'email': 'the email', 'name': 'the name', 'avatarUrl': 'the avatar'
         }), 200
+
+
+@auth_bp.route('/test', methods=['POST'])
+def test():
+    print('a login request ')
+    supabase = connect_to_supabase()
+    data = request.json
+
+    
+    return jsonify({
+            'id': 'the id ', 'email': 'the email', 'name': 'the name', 'avatarUrl': 'the avatar'
+        }), 200
     
         
 @auth_bp.route('/getUserById', methods=['POST'])
