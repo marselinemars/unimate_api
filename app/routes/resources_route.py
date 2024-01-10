@@ -10,13 +10,8 @@ resources_bp = Blueprint('resources', __name__)
 def authhello():
     return jsonify({'message': 'accessing resources service test 1', 'errors': ['hello']}), 400
 
-@resources_bp.route('/add', methods=['POST'])
-def save_resource():
-     return jsonify({'message': 'access with success '}), 400
-
-
-@resources_bp.route('/test', methods=['POST'])
-def test():
+@resources_bp.route('/uploadResource', methods=['POST'])
+def uploadResource():
     supabase = connect_to_supabase()
 
     data = request.form
