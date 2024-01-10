@@ -15,7 +15,6 @@ def save_resource():
      return jsonify({'message': 'access with success '}), 400
 
 
-
 @resources_bp.route('/test', methods=['POST'])
 def test():
     supabase = connect_to_supabase()
@@ -27,26 +26,29 @@ def test():
     resource_type = data.get('type')
 
     # Handle file upload
-    file = request.files['file']
+    file = request.files.get('file')
+    
 
     # Save file to Supabase storage in 'resources' bucket
     if file:
         filename = file.filename
         file_path = f"resources/{filename}"  # Storing in 'resources' bucket
-        file.save(file_path)
+        file_options = {"content-type": file.mimetype}
+
+        # Upload file to Supabase storage
+        supabase.storage.from_("resources").upload(
+            file=file.read(),
+            path=file_path,
+            file_options=file_options
+        )
 
         # Get Supabase storage URL
-        response = supabase.storage.from_storage(file_path).upload(file_path, file.stream)
+        resource_url = supabase.storage.from_('resources').get_public_url(file_path)
 
-        if response.status_code == 200:
-            resource_url = f"{supabase.storage_url}/public/{file_path}"
-            
-            # Update Supabase table with resource information
-            resource_data = {'title': title, 'description': description, 'type': resource_type, 'link': resource_url}
-            supabase.table('resources').insert(resource_data).execute()
+        # Update Supabase table with resource information
+        resource_data = {'title': title, 'description': description, 'type': resource_type, 'attachment': resource_url}
+        supabase.table('resources').insert(resource_data).execute()
 
-            return jsonify({'message': 'Resource uploaded successfully', 'link': resource_url}), 200
-        else:
-            return jsonify({'error': 'Failed to upload file to Supabase storage'}), 500
+        return jsonify({'message': 'Resource uploaded successfully', 'link': resource_url}), 200
     else:
         return jsonify({'error': 'No file provided in the request'}), 400
