@@ -49,6 +49,6 @@ def test():
         resource_data = {'title': title, 'description': description, 'type': resource_type, 'attachment': resource_url}
         supabase.table('resources').insert(resource_data).execute()
 
-        return jsonify({'message': 'Resource uploaded successfully', 'link': resource_url}), 200
+        return jsonify(resource_data), 200
     else:
         return jsonify({'error': 'No file provided in the request'}), 400
