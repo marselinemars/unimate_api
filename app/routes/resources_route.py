@@ -24,6 +24,7 @@ def test():
     title = data.get('title')
     description = data.get('description')
     resource_type = data.get('type')
+    user_id=data.get('user_id')
 
     # Handle file upload
     file = request.files.get('file')
@@ -46,7 +47,7 @@ def test():
         resource_url = supabase.storage.from_('resources').get_public_url(file_path)
 
         # Update Supabase table with resource information
-        resource_data = {'title': title, 'description': description, 'type': resource_type, 'attachment': resource_url}
+        resource_data = {'title': title, 'description': description, 'type': resource_type, 'attachment': resource_url , 'user_id': user_id}
         supabase.table('resources').insert(resource_data).execute()
 
         return jsonify(resource_data), 200
