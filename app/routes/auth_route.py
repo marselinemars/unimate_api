@@ -5,11 +5,6 @@ from app.utils.database import connect_to_supabase
 auth_bp = Blueprint('auth', __name__)
 
 # Function to handle user signup
-
-@auth_bp.route('/')
-def authhello():
-    return jsonify({'message': 'accessing auth service', 'errors': ['hello']}), 400
-
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
     supabase = connect_to_supabase()
@@ -89,37 +84,27 @@ def signup():
 
 @auth_bp.route('/signin', methods=['POST'])
 def signin():
-    print('a login request ')
     supabase = connect_to_supabase()
     data = request.json
 
-    title = data.get('title')
+    res = None
+    try:
+        res = supabase.auth.sign_in_with_password({'email': data.get('email'), 'password': data.get('password')})
+    except Exception as ex:
+        return jsonify({'message': 'Login failed','errors': [str(ex)]}), 400
 
-    
-    return jsonify({
-            'the sent title is ': title }), 200
+    user_info = res.user
 
-
-@auth_bp.route('/test', methods=['POST'])
-def test():
-
-    supabase = connect_to_supabase()
-
-    data = request.form
-    
-    title = data.get('title')
-    description= data.get('description')
-    type = data.get('type')
-    user_id = data.get('user_id')
-    
-    resource_data = {'title': title, 'description': description, 'type': type, 'user_id': user_id}
-    supabase.table('resources').insert(resource_data).execute()
-
-    
-    return jsonify({
-            'result': 'record registered  '
+    if user_info:
+        user_id = user_info.id # Access the 'id' attribute from 'user_info'
+        user_email = user_info.email  # Access the 'email' attribute from 'user_info'
+        response = supabase.table('users').select('name', 'avatar_url').eq('id', user_id).execute()
+        
+        return jsonify({
+            'id': user_id, 'email': user_email, 'name': response.data[0]['name'], 'avatarUrl': response.data[0]['avatar_url']
         }), 200
-    
+    else:
+        return jsonify({'message': 'Sign-in failed! User information not found'}), 400
         
 @auth_bp.route('/getUserById', methods=['POST'])
 def getUserById():
