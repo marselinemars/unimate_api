@@ -15,21 +15,38 @@ def save_resource():
      return jsonify({'message': 'access with success '}), 400
 
 
+
 @resources_bp.route('/test', methods=['POST'])
 def test():
-
     supabase = connect_to_supabase()
 
-    data = request.json
-    
+    data = request.form
+
     title = data.get('title')
-    description= data.get('description')
-    type = data.get('type')
-    user_id = data.get('user_id')
-    
-    resource_data = {'title': title, 'description': description, 'type': type, 'user_id': user_id}
-    supabase.table('resources').insert(resource_data).execute()
+    description = data.get('description')
+    resource_type = data.get('type')
 
-    
-    return jsonify( {'title': title, 'description': description, 'type': type, 'user_id': user_id}), 200
+    # Handle file upload
+    file = request.files['file']
 
+    # Save file to Supabase storage in 'resources' bucket
+    if file:
+        filename = file.filename
+        file_path = f"resources/{filename}"  # Storing in 'resources' bucket
+        file.save(file_path)
+
+        # Get Supabase storage URL
+        response = supabase.storage.from_storage(file_path).upload(file_path, file.stream)
+
+        if response.status_code == 200:
+            resource_url = f"{supabase.storage_url}/public/{file_path}"
+            
+            # Update Supabase table with resource information
+            resource_data = {'title': title, 'description': description, 'type': resource_type, 'link': resource_url}
+            supabase.table('resources').insert(resource_data).execute()
+
+            return jsonify({'message': 'Resource uploaded successfully', 'link': resource_url}), 200
+        else:
+            return jsonify({'error': 'Failed to upload file to Supabase storage'}), 500
+    else:
+        return jsonify({'error': 'No file provided in the request'}), 400
