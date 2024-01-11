@@ -1,8 +1,5 @@
 from flask import Blueprint, request, jsonify
-import re
-import os
 from app.utils.database import connect_to_supabase
-import base64
 
 resources_bp = Blueprint('resources', __name__)
 
@@ -19,32 +16,42 @@ def uploadResource():
     title = data.get('title')
     description = data.get('description')
     resource_type = data.get('type')
-    user_id=data.get('user_id')
+    user_id = data.get('user_id')
 
-    # Handle file upload
-    file = request.files.get('file')
-    
+    # Handle file uploads
+    files = request.files.getlist('files')
 
-    # Save file to Supabase storage in 'resources' bucket
-    if file:
-        filename = file.filename
-        file_path = f"resources/{filename}"  # Storing in 'resources' bucket
-        file_options = {"content-type": file.mimetype}
+    if files:
+        resource_data = {'title': title, 'description': description, 'type': resource_type, 'user_id': user_id}
+        resource_record = supabase.table('resources').insert(resource_data).execute()
 
-        # Upload file to Supabase storage
-        supabase.storage.from_("resources").upload(
-            file=file.read(),
-            path=file_path,
-            file_options=file_options
-        )
+        resource_id = resource_record['data'][0]['id']
 
-        # Get Supabase storage URL
-        resource_url = supabase.storage.from_('resources').get_public_url(file_path)
+        attachments = []
 
-        # Update Supabase table with resource information
-        resource_data = {'title': title, 'description': description, 'type': resource_type, 'attachment': resource_url , 'user_id': user_id}
-        supabase.table('resources').insert(resource_data).execute()
+        for file in files:
+            filename = file.filename
+            file_path = f"resources/{filename}"  # Storing in 'resources' bucket
+            file_options = {"content-type": file.mimetype}
+
+            # Upload file to Supabase storage
+            supabase.storage.from_("resources").upload(
+                file=file.read(),
+                path=file_path,
+                file_options=file_options
+            )
+
+            # Get Supabase storage URL
+            attachment_url = supabase.storage.from_('resources').get_public_url(file_path)
+
+            # Store the attachment in the new database table
+            attachment_data = {'resource_id': resource_id, 'attachment_url': attachment_url}
+            supabase.table('resource_attachments').insert(attachment_data).execute()
+
+            attachments.append({'attachment_url': attachment_url})
+
+        resource_data['attachments'] = attachments
 
         return jsonify(resource_data), 200
     else:
-        return jsonify({'error': 'No file provided in the request'}), 400
+        return jsonify({'error': 'No files provided in the request'}), 400
